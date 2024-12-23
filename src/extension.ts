@@ -1,191 +1,151 @@
 import * as vscode from 'vscode';
 import * as CryptoJS from 'crypto-js';
-import * as forge from 'node-forge';  // For RSA encryption and decryption
+import * as forge from 'node-forge';
 
+// Register commands for encryption, decryption, and hashing
 export function activate(context: vscode.ExtensionContext) {
-    console.log("Inline Cryptography Toolkit is now active.");
+  let disposableEncrypt = vscode.commands.registerCommand('inlineCrypto.encrypt', async () => {
+    const editor = vscode.window.activeTextEditor;
+    if (editor && editor.selection) {
+      const selectedText = editor.document.getText(editor.selection);
+      const algorithm = await vscode.window.showQuickPick(['AES', 'Blowfish', 'RSA', 'Base64', 'Base32'], { placeHolder: 'Select encryption method' });
+      const key = algorithm !== 'Base64' && algorithm !== 'Base32' ? await vscode.window.showInputBox({ placeHolder: 'Enter encryption key' }) : '';
 
-    // Encrypt Command
-    const encryptCommand = vscode.commands.registerCommand('inlineCrypto.encrypt', async () => {
-        const editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            vscode.window.showErrorMessage("No active editor found.");
-            return;
-        }
-
-        const selectedText = editor.document.getText(editor.selection);
-        if (!selectedText) {
-            vscode.window.showErrorMessage("Please select some text to encrypt.");
-            return;
-        }
-
-        const key = await promptForKey("Enter the encryption key:");
-        if (!key) {
-            vscode.window.showErrorMessage("Encryption key is required.");
-            return;
-        }
-
-        const algorithm = await promptForAlgorithm("Choose an encryption algorithm", [
-            { label: "AES", value: "AES" },
-            { label: "TripleDES", value: "TripleDES" },
-            { label: "RC4", value: "RC4" },
-            { label: "RSA", value: "RSA" },  // Adding RSA
-            { label: "Blowfish", value: "Blowfish" },
-            { label: "Twofish", value: "Twofish" }
-        ]);
-
-        const encryptedText = encryptText(selectedText, key, algorithm);
-        editor.edit((editBuilder) => {
-            editBuilder.replace(editor.selection, encryptedText);
+      if (selectedText && algorithm) {
+        const encryptedText = encryptText(selectedText, key || '', algorithm);
+        editor.edit(editBuilder => {
+          editBuilder.replace(editor.selection, encryptedText);
         });
+      }
+    }
+  });
 
-        vscode.window.showInformationMessage("Text encrypted successfully.");
-    });
+  let disposableDecrypt = vscode.commands.registerCommand('inlineCrypto.decrypt', async () => {
+    const editor = vscode.window.activeTextEditor;
+    if (editor && editor.selection) {
+      const selectedText = editor.document.getText(editor.selection);
+      const algorithm = await vscode.window.showQuickPick(['AES', 'Blowfish', 'RSA', 'Base64', 'Base32'], { placeHolder: 'Select decryption method' });
+      const key = algorithm !== 'Base64' && algorithm !== 'Base32' ? await vscode.window.showInputBox({ placeHolder: 'Enter decryption key' }) : '';
 
-    // Decrypt Command
-    const decryptCommand = vscode.commands.registerCommand('inlineCrypto.decrypt', async () => {
-        const editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            vscode.window.showErrorMessage("No active editor found.");
-            return;
-        }
-
-        const selectedText = editor.document.getText(editor.selection);
-        if (!selectedText) {
-            vscode.window.showErrorMessage("Please select some text to decrypt.");
-            return;
-        }
-
-        const key = await promptForKey("Enter the decryption key:");
-        if (!key) {
-            vscode.window.showErrorMessage("Decryption key is required.");
-            return;
-        }
-
-        const algorithm = await promptForAlgorithm("Choose a decryption algorithm", [
-            { label: "AES", value: "AES" },
-            { label: "TripleDES", value: "TripleDES" },
-            { label: "RC4", value: "RC4" },
-            { label: "RSA", value: "RSA" }
-        ]);
-
-        const decryptedText = decryptText(selectedText, key, algorithm);
-        editor.edit((editBuilder) => {
-            editBuilder.replace(editor.selection, decryptedText);
+      if (selectedText && algorithm) {
+        const decryptedText = decryptText(selectedText, key || '', algorithm);
+        editor.edit(editBuilder => {
+          editBuilder.replace(editor.selection, decryptedText);
         });
+      }
+    }
+  });
 
-        vscode.window.showInformationMessage("Text decrypted successfully.");
-    });
+  let disposableHash = vscode.commands.registerCommand('inlineCrypto.hash', async () => {
+    const editor = vscode.window.activeTextEditor;
+    if (editor && editor.selection) {
+      const selectedText = editor.document.getText(editor.selection);
+      const algorithm = await vscode.window.showQuickPick(['SHA256', 'SHA512', 'MD5'], { placeHolder: 'Select hashing method' });
 
-    // Hash Command
-    const hashCommand = vscode.commands.registerCommand('inlineCrypto.hash', async () => {
-        const editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            vscode.window.showErrorMessage("No active editor found.");
-            return;
-        }
-
-        const selectedText = editor.document.getText(editor.selection);
-        if (!selectedText) {
-            vscode.window.showErrorMessage("Please select some text to hash.");
-            return;
-        }
-
-        const algorithm = await promptForAlgorithm("Choose a hash algorithm", [
-            { label: "SHA-256", value: "SHA256" },
-            { label: "SHA-512", value: "SHA512" },
-            { label: "MD5", value: "MD5" },
-            { label: "HMAC", value: "HMAC" }
-        ]);
-
+      if (selectedText && algorithm) {
         const hashedText = hashText(selectedText, algorithm);
-        editor.edit((editBuilder) => {
-            editBuilder.replace(editor.selection, hashedText);
+        editor.edit(editBuilder => {
+          editBuilder.replace(editor.selection, hashedText);
         });
+      }
+    }
+  });
 
-        vscode.window.showInformationMessage("Text hashed successfully.");
-    });
-
-    context.subscriptions.push(encryptCommand, decryptCommand, hashCommand);
+  context.subscriptions.push(disposableEncrypt, disposableDecrypt, disposableHash);
 }
 
-// Helper functions
-
-// Prompt the user to input a key (for encryption/decryption)
-async function promptForKey(prompt: string): Promise<string | undefined> {
-    const key = await vscode.window.showInputBox({
-        placeHolder: prompt,
-        password: true
-    });
-    return key;
-}
-
-// Prompt the user to choose an algorithm
-async function promptForAlgorithm(prompt: string, options: { label: string; value: string }[]): Promise<string> {
-    const selection = await vscode.window.showQuickPick(options, { placeHolder: prompt });
-    return selection ? selection.value : "AES"; // Default to AES if no selection is made
-}
-
-// Encrypt text using the selected algorithm
+// Encrypt text based on selected algorithm
 function encryptText(text: string, key: string, algorithm: string): string {
-    switch (algorithm) {
-        case "TripleDES":
-            return CryptoJS.TripleDES.encrypt(text, key).toString();
-        case "RC4":
-            return CryptoJS.RC4.encrypt(text, key).toString();
-        case "AES":
-        default:
-            return CryptoJS.AES.encrypt(text, key).toString();
-        case "RSA":
-            return rsaEncrypt(text, key);
-        case "Blowfish":
-            return CryptoJS.Blowfish.encrypt(text, key).toString();
-        case "Twofish":
-            return CryptoJS.Twofish.encrypt(text, key).toString();
-    }
+  switch (algorithm) {
+    case 'AES':
+      return CryptoJS.AES.encrypt(text, key).toString();
+    case 'Blowfish':
+      return CryptoJS.Blowfish.encrypt(text, key).toString();
+    case 'RSA':
+      return rsaEncrypt(text, key); // RSA encryption needs a key
+    case 'Base64':
+      return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(text)); // No key needed
+    case 'Base32':
+      return base32Encode(text); // No key needed
+    default:
+      return CryptoJS.AES.encrypt(text, key).toString(); // Default to AES
+  }
 }
 
-// Decrypt text using the selected algorithm
+// Decrypt text based on selected algorithm
 function decryptText(text: string, key: string, algorithm: string): string {
-    switch (algorithm) {
-        case "TripleDES":
-            return CryptoJS.TripleDES.decrypt(text, key).toString(CryptoJS.enc.Utf8);
-        case "RC4":
-            return CryptoJS.RC4.decrypt(text, key).toString(CryptoJS.enc.Utf8);
-        case "AES":
-        default:
-            return CryptoJS.AES.decrypt(text, key).toString(CryptoJS.enc.Utf8);
-        case "RSA":
-            return rsaDecrypt(text, key);
-    }
+  switch (algorithm) {
+    case 'AES':
+      return CryptoJS.AES.decrypt(text, key).toString(CryptoJS.enc.Utf8);
+    case 'Blowfish':
+      return CryptoJS.Blowfish.decrypt(text, key).toString(CryptoJS.enc.Utf8);
+    case 'RSA':
+      return rsaDecrypt(text, key); // RSA decryption needs a key
+    case 'Base64':
+      return CryptoJS.enc.Base64.parse(text).toString(CryptoJS.enc.Utf8); // No key needed
+    case 'Base32':
+      return base32Decode(text); // No key needed
+    default:
+      return CryptoJS.AES.decrypt(text, key).toString(CryptoJS.enc.Utf8); // Default to AES
+  }
 }
 
-// Hash text using the selected algorithm
+// Hash text based on selected algorithm
 function hashText(text: string, algorithm: string): string {
-    switch (algorithm) {
-        case "SHA512":
-            return CryptoJS.SHA512(text).toString();
-        case "SHA256":
-            return CryptoJS.SHA256(text).toString();
-        case "MD5":
-            return CryptoJS.MD5(text).toString();
-        case "HMAC":
-            return CryptoJS.HmacSHA256(text, "secret").toString();
-        default:
-            return CryptoJS.SHA256(text).toString();
-    }
+  switch (algorithm) {
+    case 'SHA256':
+      return CryptoJS.SHA256(text).toString();
+    case 'SHA512':
+      return CryptoJS.SHA512(text).toString();
+    case 'MD5':
+      return CryptoJS.MD5(text).toString();
+    default:
+      return CryptoJS.SHA256(text).toString(); // Default to SHA256
+  }
 }
 
-// RSA Encryption (using node-forge)
+// RSA encryption (using node-forge)
 function rsaEncrypt(text: string, publicKeyPem: string): string {
-    const publicKey = forge.pki.publicKeyFromPem(publicKeyPem);
-    return forge.util.encode64(publicKey.encrypt(text));
+  const publicKey = forge.pki.publicKeyFromPem(publicKeyPem);
+  return forge.util.encode64(publicKey.encrypt(text));
 }
 
-// RSA Decryption (using node-forge)
+// RSA decryption (using node-forge)
 function rsaDecrypt(text: string, privateKeyPem: string): string {
-    const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
-    return privateKey.decrypt(forge.util.decode64(text));
+  const privateKey = forge.pki.privateKeyFromPem(privateKeyPem);
+  return privateKey.decrypt(forge.util.decode64(text));
+}
+
+// Base32 Encoding
+function base32Encode(text: string): string {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  const input = Buffer.from(text, 'utf8');
+  let bits = '';
+  input.forEach(byte => {
+    bits += byte.toString(2).padStart(8, '0');
+  });
+  while (bits.length % 5 !== 0) {
+    bits += '0'; // Padding
+  }
+  const chunks = bits.match(/.{5}/g);
+  return chunks ? chunks.map(chunk => alphabet[parseInt(chunk, 2)]).join('') : '';
+}
+
+// Base32 Decoding
+function base32Decode(encoded: string): string {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let bits = '';
+  encoded.toUpperCase().split('').forEach(char => {
+    if (char !== '=') {
+      const index = alphabet.indexOf(char);
+      bits += index.toString(2).padStart(5, '0');
+    }
+  });
+  let decoded = '';
+  for (let i = 0; i < bits.length; i += 8) {
+    decoded += String.fromCharCode(parseInt(bits.substr(i, 8), 2));
+  }
+  return decoded;
 }
 
 export function deactivate() {}
