@@ -3,7 +3,7 @@
   "displayName": "Inline Cryptography Toolkit",
   "description": "Encrypt, decrypt, and hash text inline in VS Code.",
   "publisher": "ashen-chathuranga",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "Ashen Chathuranga"
     },
