@@ -14,10 +14,48 @@
   "contributes": {
     "commands": [
       {
-        "command": "inline-cryptography-toolkit.helloWorld",
-        "title": "Hello World"
+        "command": "inlineCrypto.encrypt",
+        "title": "Encrypt Selected Text"
+      },
+      {
+        "command": "inlineCrypto.decrypt",
+        "title": "Decrypt Selected Text"
+      },
+      {
+        "command": "inlineCrypto.hash",
+        "title": "Hash Selected Text"
       }
-    ]
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "inlineCrypto.encrypt",
+          "when": "editorHasSelection",
+          "group": "navigation"
+        },
+        {
+          "command": "inlineCrypto.decrypt",
+          "when": "editorHasSelection",
+          "group": "navigation"
+        },
+        {
+          "command": "inlineCrypto.hash",
+          "when": "editorHasSelection",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "Inline Cryptography Toolkit",
+      "properties": {
+        "inlineCrypto.defaultKey": {
+          "type": "string",
+          "default": "your-secret-key",
+          "description": "Default key for encryption and decryption."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -27,15 +65,18 @@
     "lint": "eslint src",
     "test": "vscode-test"
   },
+  "dependencies": {
+    "crypto-js": "^4.2.0"
+  },
   "devDependencies": {
-    "@types/vscode": "^1.96.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
+    "@types/vscode": "^1.96.0",
     "@typescript-eslint/eslint-plugin": "^8.17.0",
     "@typescript-eslint/parser": "^8.17.0",
-    "eslint": "^9.16.0",
-    "typescript": "^5.7.2",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.16.0",
+    "typescript": "^5.7.2"
   }
 }
