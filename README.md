@@ -135,4 +135,3 @@ If you encounter any issues, feel free to open an issue on the [GitHub repositor
 ## Acknowledgments
 
 - This extension uses **CryptoJS** for symmetric encryption, decryption, and hashing, and **node-forge** for RSA encryption and decryption.
-- Thanks to the contributors who helped make this extension more useful!
