@@ -5,7 +5,7 @@
   "publisher": "ashen-chathuranga",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.96.0"
+    "vscode": "*"
   },
   "categories": [
     "Other"
