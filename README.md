@@ -1,4 +1,5 @@
-# Inline Cryptography Toolkit
+# <img src="images/icon.png" alt="Inline Cryptography Toolkit Icon" width="35" style="vertical-align:middle"/> Inline Cryptography Toolkit
+
 
 ## Overview
 
