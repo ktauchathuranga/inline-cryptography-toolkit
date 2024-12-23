@@ -4,12 +4,20 @@
   "description": "Encrypt, decrypt, and hash text inline in VS Code.",
   "publisher": "ashen-chathuranga",
   "version": "0.1.0",
+  "author": {
+    "name": "Ashen Chathuranga"
+    },
   "engines": {
     "vscode": "^1.96.0"
   },
-  "categories": [
-    "Other"
-  ],
+  "categories": ["Other"],
+  "keywords": ["cryptography", "encryption", "decryption", "hash", "security"],
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#7CFC00",
+    "theme": "light"
+  },
+  "pricing": "Free",
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
@@ -82,8 +90,14 @@
     "eslint": "^9.16.0",
     "typescript": "^5.7.2"
   },
+  "license": "SEE LICENSE IN LICENSE.md",
+  "bugs": {
+    "url": "https://github.com/ktauchathuranga/inline-cryptography-toolkit/issues",
+    "email": "ktauchathuranga@gmail.com"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ktauchathuranga/inline-cryptography-toolkit"
-  }
+  },
+  "homepage": "https://github.com/ktauchathuranga/inline-cryptography-toolkit/blob/main/README.md"
 }
