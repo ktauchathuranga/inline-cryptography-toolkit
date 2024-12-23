@@ -14,7 +14,7 @@
   "keywords": ["cryptography", "encryption", "decryption", "hash", "security"],
   "icon": "images/icon.png",
   "galleryBanner": {
-    "color": "#7CFC00",
+    "color": "#f2f0ef",
     "theme": "light"
   },
   "pricing": "Free",
