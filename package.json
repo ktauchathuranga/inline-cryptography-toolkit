@@ -3,7 +3,7 @@
   "displayName": "Inline Cryptography Toolkit",
   "description": "Encrypt, decrypt, and hash text inline in VS Code.",
   "publisher": "ashen-chathuranga",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -67,7 +67,9 @@
     "test": "vscode-test"
   },
   "dependencies": {
-    "crypto-js": "^4.2.0"
+    "@types/node-forge": "^1.3.11",
+    "crypto-js": "^4.2.0",
+    "node-forge": "^1.3.1"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
