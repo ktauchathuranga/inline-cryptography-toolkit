@@ -90,7 +90,7 @@
     "eslint": "^9.16.0",
     "typescript": "^5.7.2"
   },
-  "license": "SEE LICENSE IN LICENSE.md",
+  "license": "SEE LICENSE IN LICENSE",
   "bugs": {
     "url": "https://github.com/ktauchathuranga/inline-cryptography-toolkit/issues",
     "email": "ktauchathuranga@gmail.com"
