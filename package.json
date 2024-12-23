@@ -2,6 +2,7 @@
   "name": "inline-cryptography-toolkit",
   "displayName": "Inline Cryptography Toolkit",
   "description": "Encrypt, decrypt, and hash text inline in VS Code.",
+  "publisher": "ashen-chathuranga",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.96.0"
