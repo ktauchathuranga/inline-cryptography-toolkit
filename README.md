@@ -9,6 +9,19 @@ With a simple right-click menu, you can easily encrypt or decrypt selected text,
 
 ---
 
+### Quick Demo  
+
+To see how the **Inline Cryptography Toolkit** works, check out this quick demo:  
+
+<img src="images/demo.gif" alt="Demo of Inline Cryptography Toolkit" width="100%" style="border: 1px solid #ccc; border-radius: 4px;"/>  
+
+This demonstration shows how to:  
+- Encrypt and decrypt selected text.  
+- Hash text using different algorithms.  
+- Use the extension's right-click menu for cryptographic operations.  
+
+---
+
 ## Features
 
 - **Encryption Methods**:
